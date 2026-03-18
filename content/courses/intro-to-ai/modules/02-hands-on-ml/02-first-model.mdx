@@ -1,0 +1,137 @@
+---
+title: "Building Your First ML Model"
+description: "Train a classification model on real data using scikit-learn, evaluate its performance, and understand the results."
+order: 2
+access: "free"
+duration: "15 min read"
+---
+
+# Building Your First ML Model
+
+Time to get hands-on! In this lesson, you'll build a complete machine learning pipeline: load data, train a model, and evaluate how well it performs.
+
+## The Dataset: Iris Flowers
+
+We'll use the classic **Iris dataset** — 150 samples of iris flowers with 4 measurements each, belonging to 3 species. It's the "Hello World" of machine learning.
+
+```python
+from sklearn.datasets import load_iris
+import pandas as pd
+
+# Load the dataset
+iris = load_iris()
+df = pd.DataFrame(iris.data, columns=iris.feature_names)
+df['species'] = iris.target_names[iris.target]
+
+print(df.head())
+print(f"\nShape: {df.shape}")
+print(f"Species: {df['species'].unique()}")
+```
+
+## Step 1: Split the Data
+
+We always split data into **training** and **test** sets. The model learns from training data and is evaluated on test data it hasn't seen before.
+
+```python
+from sklearn.model_selection import train_test_split
+
+X = iris.data    # Features (measurements)
+y = iris.target  # Labels (species)
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+print(f"Training samples: {len(X_train)}")
+print(f"Test samples: {len(X_test)}")
+```
+
+<Callout type="warning" title="Important">
+Never evaluate a model on the same data it was trained on. This gives an overly optimistic estimate of performance. Always use a separate test set.
+</Callout>
+
+## Step 2: Train the Model
+
+We'll use a **Random Forest** classifier — an ensemble method that builds multiple decision trees and combines their predictions.
+
+```python
+from sklearn.ensemble import RandomForestClassifier
+
+# Create and train the model
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+print("Model trained!")
+```
+
+That's it — two lines to create and train a model. scikit-learn makes this remarkably simple.
+
+## Step 3: Make Predictions
+
+```python
+# Predict on test data
+predictions = model.predict(X_test)
+
+# Show some predictions vs actual
+for i in range(5):
+    predicted = iris.target_names[predictions[i]]
+    actual = iris.target_names[y_test[i]]
+    status = "correct" if predictions[i] == y_test[i] else "WRONG"
+    print(f"Predicted: {predicted:12s} | Actual: {actual:12s} | {status}")
+```
+
+## Step 4: Evaluate Performance
+
+```python
+from sklearn.metrics import accuracy_score, classification_report
+
+accuracy = accuracy_score(y_test, predictions)
+print(f"Accuracy: {accuracy:.1%}")
+print("\nDetailed Report:")
+print(classification_report(y_test, predictions,
+                          target_names=iris.target_names))
+```
+
+You should see accuracy around **96-100%** — the Iris dataset is relatively easy for modern algorithms.
+
+## Understanding the Results
+
+The classification report gives you:
+- **Precision**: Of all predicted class X, how many were actually X?
+- **Recall**: Of all actual class X, how many did we correctly predict?
+- **F1-score**: Harmonic mean of precision and recall
+
+<Callout type="tip" title="Key Takeaway">
+Accuracy alone doesn't tell the full story. In imbalanced datasets (e.g., 99% negative, 1% positive), a model that always predicts "negative" would be 99% accurate but completely useless.
+</Callout>
+
+## Complete Code
+
+Here's the full pipeline in one block:
+
+```python
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+
+# Load
+iris = load_iris()
+X_train, X_test, y_train, y_test = train_test_split(
+    iris.data, iris.target, test_size=0.2, random_state=42
+)
+
+# Train
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+# Evaluate
+predictions = model.predict(X_test)
+print(f"Accuracy: {accuracy_score(y_test, predictions):.1%}")
+print(classification_report(y_test, predictions,
+                          target_names=iris.target_names))
+```
+
+## What's Next
+
+Congratulations — you've built your first ML model! In the next lessons, we'll tackle more complex datasets, explore different algorithms, and learn how to improve model performance through feature engineering and hyperparameter tuning.

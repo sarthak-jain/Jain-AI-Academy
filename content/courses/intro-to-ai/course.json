@@ -1,0 +1,9 @@
+{
+  "title": "Introduction to AI",
+  "description": "A beginner-friendly journey through the fundamentals of artificial intelligence. Learn what AI is, how it works, and build your first intelligent systems.",
+  "featured": true,
+  "status": "published",
+  "access": "free",
+  "tags": ["Beginner", "Fundamentals"],
+  "order": 1
+}
